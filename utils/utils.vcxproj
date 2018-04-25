@@ -147,15 +147,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="flag_macros.h" />
-    <ClInclude Include="function_addons.h" />
-    <ClInclude Include="iterator_addons.h" />
-    <ClInclude Include="operation_exception.h" />
-    <ClInclude Include="ptrs.h" />
-    <ClInclude Include="static_array.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="utilities.h" />
+    <ClInclude Include="utils\flag_macros.h" />
+    <ClInclude Include="utils\function_addons.h" />
+    <ClInclude Include="utils\iterator_addons.h" />
+    <ClInclude Include="utils\operation_exception.h" />
+    <ClInclude Include="utils\static_array.h" />
+    <ClInclude Include="utils\utilities.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

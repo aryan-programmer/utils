@@ -12,7 +12,7 @@ namespace utils
 		constexpr const uint __Internal_CheckIndex( const uint index ) const
 		{
 			if ( llong( index ) > llong( size ) )
-				throw operation_exception( from::static_array , error_type::indexTooLarge );
+				throw operation_exception( from::static_array , error_type::invalidIndex );
 			return index;
 		}
 	public:
@@ -92,17 +92,14 @@ namespace utils
 		{ return ( std::reverse_iterator<T*>( elementArray + size ) ); }
 		std::reverse_iterator<T*> rend() const noexcept
 		{ return ( std::reverse_iterator<T*>( elementArray ) ); }
-		constexpr bool empty() const noexcept
-		{
-			return false;
-		}
+		constexpr bool empty() const noexcept { return false; }
 
 		T& front() { return elementArray[ 0 ]; }
 		constexpr const T& front() const { return elementArray[ 0 ]; }
 
-		T& back() { return elementArray[ _Size - 1 ]; }
+		T& back() { return elementArray[ size - 1 ]; }
 		constexpr const T& back() const
-		{ return elementArray[ _Size - 1 ]; }
+		{ return elementArray[ size - 1 ]; }
 
 		T* data() { return elementArray; }
 		constexpr const T* data() const { return elementArray; }

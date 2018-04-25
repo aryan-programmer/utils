@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{44260151-717c-4baf-bba5-b60454138287}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -21,26 +24,23 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="flag_macros.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="utils\flag_macros.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="ptrs.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="utils\function_addons.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="iterator_addons.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="utils\iterator_addons.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="utilities.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="utils\operation_exception.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="static_array.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="utils\static_array.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="operation_exception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="function_addons.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="utils\utilities.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

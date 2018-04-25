@@ -12,10 +12,13 @@ namespace utils
 	FLAG( ptr_t )
 	{
 		unique = 1 << 0 ,
-			shared = 1 << 1 ,
-			strong = 1 << 2 ,
+			quick = 1 << 1 ,
+			shared = 1 << 2 ,
 			weak = 1 << 3 ,
-			abstract = 1 << 4
+			abstract = 1 << 4 ,
+			intrusive = 1 << 5 ,
+			safe = quick ,
+			strong = shared
 	};
 
 	template<typename T> struct ptr_traits
@@ -48,7 +51,7 @@ namespace utils
 			valuePtr = nullptr;
 			return *this;
 		}
-		inline self& operator=( const T* valuePtr )noexcept
+		inline self& operator=( T* valuePtr )noexcept
 		{
 			if ( valuePtr )dealloc( valuePtr );
 			this->valuePtr = valuePtr;
@@ -109,22 +112,125 @@ namespace utils
 		inline T* get() const noexcept { return valuePtr; }
 	};
 
-	template<typename T , ptr_t TPtr = ptr_t::unique , typename TTraits = ptr_traits<T> , typename... Args>
-	inline ptr<T , TPtr , TTraits> make_ptr( Args&&... args )
+	template<typename T , typename TTraits = ptr_traits<T>>
+	using unique_pointer = ptr<T , ptr_t::unique , TTraits>;
+
+	template<typename T , typename TTraits>
+	class ptr<T , ptr_t::quick , TTraits>
+	{
+		T* vPtr;
+		int* useCount;
+	public:
+		static inline void dealloc( T* val ) noexcept { TTraits::dealloc( val ); }
+
+		using self = ptr<T , ptr_t::quick , TTraits>;
+		ptr() noexcept :vPtr{ nullptr } , useCount{ nullptr } { }
+		ptr( const std::nullptr_t ) noexcept : vPtr{ nullptr } , useCount{ nullptr } { }
+		ptr( T* valuePtr ) noexcept :
+			vPtr{ valuePtr } , useCount{ new int{ 1 } } { }
+		ptr( const self& right ) noexcept :
+			vPtr{ right.vPtr } , useCount{ right.useCount }
+		{
+			*useCount = ( ( *useCount ) + 1 );
+		}
+
+		self& operator=( const std::nullptr_t ) noexcept
+		{
+			if ( useCount != nullptr )
+			{
+				*useCount = *useCount - 1;
+				if ( *useCount == 0 )
+				{
+					delete vPtr;
+					delete useCount;
+				}
+			}
+			useCount = nullptr;
+			vPtr = nullptr;
+			return *this;
+		}
+		self& operator=( const self& right ) noexcept
+		{
+			if ( useCount != nullptr )
+			{
+				*useCount = *useCount - 1;
+				if ( *useCount == 0 )
+				{
+					delete vPtr;
+					delete useCount;
+				}
+			}
+			vPtr = right.vPtr;
+			useCount = right.useCount;
+			*useCount = *useCount + 1;
+			return *this;
+		}
+		self& operator=( self&& right ) noexcept
+		{
+			if ( useCount != nullptr )
+			{
+				*useCount = *useCount - 1;
+				if ( *useCount == 0 )
+				{
+					delete vPtr;
+					delete useCount;
+				}
+			}
+			vPtr = right.vPtr;
+			useCount = right.useCount;
+			right.vPtr = right.useCount = nullptr;
+			return *this;
+		}
+
+
+		inline T* release() noexcept
+		{
+			if ( useCount == nullptr )return nullptr;
+			T* val = vPtr;
+			*useCount = *useCount - 1;
+			if ( *useCount == 0 )
+				delete useCount;
+			useCount = nullptr;
+			vPtr = nullptr;
+			return val;
+		}
+		inline void reset() noexcept
+		{
+			T* p = release();
+			if ( p != nullptr )
+				delete p;
+		}
+		inline void reset( T* vptr ) noexcept
+		{
+			reset();
+			useCount = new int{ 1 };
+			vPtr = vptr;
+		}
+		template<typename... Args>
+		inline void re_init( Args&&... args ) noexcept
+		{ reset( new T( std::forward<Args>( args )... ) ); }
+		template<typename... Args>
+		inline void re_init_universal( Args&&... args ) noexcept
+		{ reset( new T{ std::forward<Args>( args )... } ); }
+		~ptr() { reset(); }
+	};
+
+	template<typename T , ptr_t TPtr = ptr_t::unique ,
+		typename TTraits = ptr_traits<T> , typename... Args>
+		inline ptr<T , TPtr , TTraits> make_ptr( Args&&... args )
 	{
 		return ptr<T , TPtr , TTraits>( T* p = new T( std::forward<Args>( args )... ) );
 	}
-	template<typename T , ptr_t TPtr = ptr_t::unique , typename TTraits = ptr_traits<T> , typename... Args>
-	inline ptr<T , TPtr , TTraits> make_ptr_universal( Args&&... args )
+	template<typename T , ptr_t TPtr = ptr_t::unique ,
+		typename TTraits = ptr_traits<T> , typename... Args>
+		inline ptr<T , TPtr , TTraits> make_ptr_universal( Args&&... args )
 	{
 		return ptr<T , TPtr , TTraits>( new T{ std::forward<Args>( args )... } );
 	}
 
-	template<typename T , ptr_t TPtr = ptr_t::unique , typename TTraits = ptr_traits<T>>
-	void ptr<T , TPtr , TTraits>::dealloc( T* val ) noexcept;
-
-	template<typename T , typename TTraits = ptr_traits<T>>
-	using unique_pointer = ptr<T , ptr_t::unique , TTraits>;
+	template<typename T , ptr_t TPtr = ptr_t::unique ,
+		typename TTraits = ptr_traits<T>>
+		void ptr<T , TPtr , TTraits>::dealloc( T* val ) noexcept;
 }
 #undef FLAG
 #undef FLAG_CT
