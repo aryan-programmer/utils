@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __UTILITIES__ITERATOR__ADDONS__
+#define __UTILITIES__ITERATOR__ADDONS__
 #include <type_traits>
 #include <utility>
 #include <iterator>
@@ -17,6 +19,7 @@ namespace utils
 		using self = rec_iterator<T , ShiftValueSize , TFunc>;
 		using value_type = T;
 		using pointer = T * ;
+		using reference = const T&;
 		using const_reference = const T&;
 		rec_iterator() = delete;
 
@@ -48,12 +51,12 @@ namespace utils
 	private:
 		explicit inline rec_iterator(
 			uint index ,
-			const static_array<T , ShiftValueSize>& seed , TFunc func ) :
+			const static_array<T , ShiftValueSize>& seed , TFunc func ) noexcept :
 			idex{ index } , regs{ seed } , func{ func }
 		{ }
 		explicit inline rec_iterator(
 			uint index ,
-			const std::initializer_list<T>& seed , TFunc func ) :
+			const std::initializer_list<T>& seed , TFunc func ) noexcept :
 			idex{ index } , regs{ seed } , func{ func }
 		{ }
 
@@ -70,6 +73,11 @@ namespace utils
 	{
 	public:
 		using iterator = rec_iterator<T , N , TFunc>;
+		using value_type = T;
+		using reference = const T&;
+		using const_reference = const T&;
+		using size_type = size_t;
+		using const_iterator = rec_iterator<T , N , TFunc>;
 	private:
 		uint iterations;
 		const static_array<T , N> seed;
@@ -84,11 +92,27 @@ namespace utils
 						  const static_array<T , N> seed ) :
 			iterations{ iterations } , seed{ std::move( seed ) } , func{ func }
 		{ }
-		inline iterator begin() const
+		inline iterator begin() const noexcept
 		{ return iterator{ 0,seed,func }; }
 		inline iterator end() const
 		{ return iterator{ iterations,{},func }; }
+		constexpr size_t size() const noexcept
+		{ return iterations; }
 	};
+
+	template<int N , typename TFunc , typename T >
+	rec_range<T , N , TFunc> make_range( TFunc func ,
+										 uint iterations , const std::initializer_list<T>& seed )
+	{
+		return rec_range<T , N , TFunc>( func , iterations , seed );
+	}
+	template<int N , typename TFunc , typename T >
+	rec_range<T , N , TFunc> make_range( TFunc func ,
+										 uint iterations , const static_array<T , N>& seed )
+	{
+		return rec_range<T , N , TFunc>( func , iterations , seed );
+	}
+#pragma endregion
 
 	template<typename iterator>
 	class iterator_pair
@@ -115,20 +139,7 @@ namespace utils
 		auto end() const->decltype( t.rbegin() ) { return t.rend(); }
 	};
 
-	template<int N , typename TFunc , typename T >
-	rec_range<T , N , TFunc> make_range( TFunc func ,
-										 uint iterations , const std::initializer_list<T>& seed )
-	{
-		return rec_range<T , N , TFunc>( func , iterations , seed );
-	}
-	template<int N , typename TFunc , typename T >
-	rec_range<T , N , TFunc> make_range( TFunc func ,
-										 uint iterations , const static_array<T , N>& seed )
-	{
-		return rec_range<T , N , TFunc>( func , iterations , seed );
-	}
-#pragma endregion
-
+#pragma region transform_if
 	template<
 		typename InputIterator ,
 		typename OutputIterator ,
@@ -149,7 +160,7 @@ namespace utils
 			}
 		return output;
 	}
-
+#pragma endregion
 }
 namespace std
 {
@@ -158,8 +169,17 @@ namespace std
 		<utils::rec_iterator<T , ShiftValueSize , TFunc>>
 	{
 		using iterator_category = std::forward_iterator_tag;
-		using value_type = T;
+		using value_type = typename remove_cv<T>::type;
 		using pointer = T * ;
 		using reference = T & ;
 	};
+	template<typename T , int N , typename TFunc>
+	const utils::rec_iterator<T , N , TFunc> begin( utils::rec_range<T , N , TFunc> range ) noexcept
+	{ return range.begin(); }
+
+	template<typename T , int N , typename TFunc>
+	const utils::rec_iterator<T , N , TFunc> end( utils::rec_range<T , N , TFunc> range ) noexcept
+	{ return range.end(); }
 }
+#endif // !__UTILITIES__ITERATOR__ADDONS__
+

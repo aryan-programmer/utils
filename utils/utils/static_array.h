@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __UTILITIES__STATIC_ARRAY__
+#define __UTILITIES__STATIC_ARRAY__
 #include "utilities.h"
 #include "operation_exception.h"
 #include <type_traits>
@@ -105,4 +107,4 @@ namespace utils
 		constexpr const T* data() const { return elementArray; }
 	};
 }
-
+#endif // !__UTILITIES__STATIC_ARRAY__

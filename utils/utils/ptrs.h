@@ -1,11 +1,13 @@
 #pragma once
+#ifndef __UTILITIES__GARBAGE_COLLECTION__POINTER_WRAPPERS__
+#define __UTILITIES__GARBAGE_COLLECTION__POINTER_WRAPPERS__
 #pragma push_macro("FLAG")
 #pragma push_macro("FLAG_CT")
 #pragma push_macro("FLAG_FUNCS_CT")
 #undef FLAG
 #undef FLAG_CT
 #undef FLAG_FUNCS_CT
-#include "flag_macros.h"
+#include "macros\flags.h"
 #include <type_traits>
 namespace utils
 {
@@ -237,4 +239,5 @@ namespace utils
 #undef FLAG_FUNCS_CT
 #pragma pop_macro("FLAG")
 #pragma pop_macro("FLAG_CT")
-#pragma pop_macro("FLAG_FUNCS_CT")
+#pragma pop_macro("FLAG_FUNCS_CT")  
+#endif // !__UTILITIES__GARBAGE_COLLECTION__POINTER_WRAPPERS__

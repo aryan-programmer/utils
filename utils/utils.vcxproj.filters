@@ -16,6 +16,9 @@
     <Filter Include="Header Files\utils">
       <UniqueIdentifier>{44260151-717c-4baf-bba5-b60454138287}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\utils\macros">
+      <UniqueIdentifier>{ff1fc3bf-efb2-4735-9c31-5b32d906a870}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -23,9 +26,6 @@
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\flag_macros.h">
-      <Filter>Header Files\utils</Filter>
     </ClInclude>
     <ClInclude Include="utils\function_addons.h">
       <Filter>Header Files\utils</Filter>
@@ -40,6 +40,24 @@
       <Filter>Header Files\utils</Filter>
     </ClInclude>
     <ClInclude Include="utils\utilities.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\ptrs.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\type_at_index.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\macros\flags.h">
+      <Filter>Header Files\utils\macros</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\macros\ext_meth_singular.h">
+      <Filter>Header Files\utils\macros</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\ext_meth.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\ext_meth_generic.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
   </ItemGroup>

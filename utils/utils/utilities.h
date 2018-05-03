@@ -1,8 +1,6 @@
 #pragma once
-
 #ifndef __UTILITIES__
 #define __UTILITIES__
-
 #include <cstdlib>
 #include <ctime>
 #include <type_traits>

@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __UTILITIES__FUNCTION_ADDONS__
+#define __UTILITIES__FUNCTION_ADDONS__
 #include "utilities.h"
 namespace utils
 {
@@ -33,7 +35,7 @@ namespace utils
 			return func( std::forward<Args>( args )... );
 		}
 	};
-	/* 
+	/*
 	 * Given any list of any functions taking just
 	 * one parameter and returning a value that can
 	 * be passed to the previous function,
@@ -47,10 +49,10 @@ namespace utils
 	 * be of any type,
 	 * eg:float n(float,int,double),
 	 * the func chain returns a function object that
-	 * mimic calling them in sequence 
+	 * mimic calling them in sequence
 	 * eg, like the lambda given below
 	 * [&](float a,int b,double c){return f(g(h(n(a,b,c))));}
-	 * and if you want to get a functor that does just that 
+	 * and if you want to get a functor that does just that
 	 * using a call from this method, then that call would look
 	 * like func_chain(f,g,h,n)
 	 */
@@ -108,5 +110,5 @@ namespace utils
 		std::forward<Func>( func )( std::forward<Arg>( arg ) );
 	}
 #pragma endregion
-
 }
+#endif // !__UTILITIES__FUNCTION_ADDONS__
