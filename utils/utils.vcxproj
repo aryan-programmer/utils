@@ -159,6 +159,7 @@
     <ClInclude Include="utils\iterator_addons.h" />
     <ClInclude Include="utils\macros\ext_meth_singular.h" />
     <ClInclude Include="utils\macros\flags.h" />
+    <ClInclude Include="utils\object.h" />
     <ClInclude Include="utils\operation_exception.h" />
     <ClInclude Include="utils\ptrs.h" />
     <ClInclude Include="utils\static_array.h" />

@@ -19,6 +19,9 @@
     <Filter Include="Header Files\utils\macros">
       <UniqueIdentifier>{ff1fc3bf-efb2-4735-9c31-5b32d906a870}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\utils\ml_lib">
+      <UniqueIdentifier>{0f88f862-2ded-453b-bd80-70cb30360427}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -58,6 +61,9 @@
       <Filter>Header Files\utils</Filter>
     </ClInclude>
     <ClInclude Include="utils\ext_meth_generic.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\object.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
   </ItemGroup>

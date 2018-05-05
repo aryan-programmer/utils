@@ -9,18 +9,13 @@
 #undef FLAG_FUNCS_CT
 #include "macros\flags.h"
 #include <type_traits>
+#include <utility>
 namespace utils
 {
 	FLAG( ptr_t )
 	{
 		unique = 1 << 0 ,
-			quick = 1 << 1 ,
-			shared = 1 << 2 ,
-			weak = 1 << 3 ,
-			abstract = 1 << 4 ,
-			intrusive = 1 << 5 ,
-			safe = quick ,
-			strong = shared
+			abstract = 1 << 1 ,
 	};
 
 	template<typename T> struct ptr_traits
@@ -111,111 +106,202 @@ namespace utils
 		}
 		~ptr() { if ( valuePtr )dealloc( valuePtr ); }
 
+		template<typename _TTraits>
+		inline void swap( self_diff_trait<_TTraits>& right ) noexcept
+		{ std::swap( valuePtr , right.valuePtr ); }
+
 		inline T* get() const noexcept { return valuePtr; }
 	};
 
-	template<typename T , typename TTraits = ptr_traits<T>>
-	using unique_pointer = ptr<T , ptr_t::unique , TTraits>;
-
 	template<typename T , typename TTraits>
-	class ptr<T , ptr_t::quick , TTraits>
+	class ptr<T , ptr_t::abstract , TTraits>
 	{
-		T* vPtr;
+	protected:
+		T * valuePtr;
 		int* useCount;
 	public:
 		static inline void dealloc( T* val ) noexcept { TTraits::dealloc( val ); }
-
-		using self = ptr<T , ptr_t::quick , TTraits>;
-		ptr() noexcept :vPtr{ nullptr } , useCount{ nullptr } { }
-		ptr( const std::nullptr_t ) noexcept : vPtr{ nullptr } , useCount{ nullptr } { }
-		ptr( T* valuePtr ) noexcept :
-			vPtr{ valuePtr } , useCount{ new int{ 1 } } { }
-		ptr( const self& right ) noexcept :
-			vPtr{ right.vPtr } , useCount{ right.useCount }
+		using self = ptr<T , ptr_t::abstract , TTraits>;
+		template<typename _TTraits>
+		using self_diff_trait = ptr<T , ptr_t::abstract , _TTraits>;
+		inline ptr() noexcept :valuePtr( nullptr ) , useCount( nullptr ) { }
+		inline ptr( std::nullptr_t ) noexcept : valuePtr( nullptr ) , useCount( nullptr ) { }
+		inline ptr( T* ptr ) noexcept : valuePtr( ptr ) , useCount( new int( 1 ) ) { }
+		inline ptr( const self& sp ) noexcept : valuePtr( sp.valuePtr ) , useCount( sp.useCount ) { *useCount = *useCount + 1; }
+		inline ptr( self&& sp ) noexcept : valuePtr( sp.valuePtr ) , useCount( sp.useCount ) { }
+		self& operator=( const std::nullptr_t )
 		{
-			*useCount = ( ( *useCount ) + 1 );
-		}
-
-		self& operator=( const std::nullptr_t ) noexcept
-		{
-			if ( useCount != nullptr )
+			*useCount = *useCount - 1;
+			if ( *useCount == 0 )
 			{
-				*useCount = *useCount - 1;
-				if ( *useCount == 0 )
-				{
-					delete vPtr;
-					delete useCount;
-				}
+				dealloc( valuePtr );
+				delete useCount;
 			}
 			useCount = nullptr;
-			vPtr = nullptr;
+			valuePtr = nullptr;
 			return *this;
 		}
-		self& operator=( const self& right ) noexcept
+		template<typename T2>
+		self& operator=( T2* ptr )
 		{
 			if ( useCount != nullptr )
 			{
 				*useCount = *useCount - 1;
 				if ( *useCount == 0 )
 				{
-					delete vPtr;
+					dealloc( valuePtr );
 					delete useCount;
 				}
 			}
-			vPtr = right.vPtr;
-			useCount = right.useCount;
+			useCount = new int( 1 );
+			valuePtr = ptr;
+			return *this;
+		}
+		self& operator=( T* ptr )
+		{
+			if ( useCount != nullptr )
+			{
+				*useCount = *useCount - 1;
+				if ( *useCount == 0 )
+				{
+					dealloc( valuePtr );
+					delete useCount;
+				}
+			}
+			useCount = new int( 1 );
+			valuePtr = ptr;
+			return *this;
+		}
+		self& operator=( const self& qp )
+		{
+			if ( useCount != nullptr )
+			{
+				dealloc( valuePtr );
+				delete useCount;
+			}
+			valuePtr = qp.valuePtr;
+			useCount = qp.useCount;
 			*useCount = *useCount + 1;
 			return *this;
 		}
-		self& operator=( self&& right ) noexcept
+		self& operator=( self&& qp ) noexcept
+		{
+			if ( useCount != nullptr )
+			{
+				dealloc( valuePtr );
+				delete useCount;
+			}
+			valuePtr = qp.valuePtr;
+			useCount = qp.useCount;
+			return *this;
+		}
+		// Returns true if the doesn't value exist
+		bool operator==( std::nullptr_t ) { return valuePtr == nullptr; }
+		// Returns true if the value exists
+		bool operator!=( std::nullptr_t ) { return valuePtr != nullptr; }
+		// Returns true if the value exists
+		explicit operator bool() { return valuePtr != nullptr; }
+		const T* operator->()const { return valuePtr; }
+		const T& operator*() const { return *valuePtr; }
+		T* operator->() { return valuePtr; }
+		T& operator*() { return *valuePtr; }
+		T* get() { return valuePtr; }
+		template<typename... Args>
+		void re_init_braced( Args&&... args )
 		{
 			if ( useCount != nullptr )
 			{
 				*useCount = *useCount - 1;
 				if ( *useCount == 0 )
 				{
-					delete vPtr;
+					if ( valuePtr != nullptr )
+						dealloc( valuePtr );
 					delete useCount;
 				}
 			}
-			vPtr = right.vPtr;
-			useCount = right.useCount;
-			right.vPtr = right.useCount = nullptr;
-			return *this;
+			useCount = new int( 1 );
+			valuePtr = new T{ std::forward<Args>( args )... };
 		}
-
-
-		inline T* release() noexcept
+		template<typename... Args>
+		void re_init( Args&&... args )
+		{
+			if ( useCount != nullptr )
+			{
+				*useCount = *useCount - 1;
+				if ( *useCount == 0 )
+				{
+					if ( valuePtr != nullptr )
+						dealloc( valuePtr );
+					delete useCount;
+				}
+			}
+			useCount = new int( 1 );
+			valuePtr = new T( std::forward<Args>( args )... );
+		}
+		T* release()
 		{
 			if ( useCount == nullptr )return nullptr;
-			T* val = vPtr;
+			T* val = valuePtr;
 			*useCount = *useCount - 1;
 			if ( *useCount == 0 )
 				delete useCount;
-			useCount = nullptr;
-			vPtr = nullptr;
+			useCount = new int( 1 );
+			valuePtr = nullptr;
 			return val;
 		}
 		inline void reset() noexcept
 		{
-			T* p = release();
-			if ( p != nullptr )
-				delete p;
+			*useCount = *useCount - 1;
+			if ( *useCount == 0 )
+			{
+				dealloc( valuePtr );
+				delete useCount;
+			}
+			useCount = nullptr;
+			valuePtr = nullptr;
 		}
-		inline void reset( T* vptr ) noexcept
+		inline void reset( T* ptr ) noexcept
 		{
-			reset();
-			useCount = new int{ 1 };
-			vPtr = vptr;
+			if ( useCount != nullptr )
+			{
+				*useCount = *useCount - 1;
+				if ( *useCount == 0 )
+				{
+					dealloc( valuePtr );
+					delete useCount;
+				}
+			}
+			useCount = new int( 1 );
+			valuePtr = ptr;
 		}
-		template<typename... Args>
-		inline void re_init( Args&&... args ) noexcept
-		{ reset( new T( std::forward<Args>( args )... ) ); }
-		template<typename... Args>
-		inline void re_init_universal( Args&&... args ) noexcept
-		{ reset( new T{ std::forward<Args>( args )... } ); }
-		~ptr() { reset(); }
+		_declspec( property( get = get_use_count ) )int uses;
+		_declspec( property( put = set_value , get = get_value ) )T value;
+		const int get_use_count() { return *useCount; }
+
+		template<typename _TTraits>
+		inline void swap( self_diff_trait<_TTraits>& right ) noexcept
+		{
+			std::swap( valuePtr , right.valuePtr );
+			std::swap( useCount , right.useCount );
+		}
+
+		~ptr()
+		{
+			if ( useCount == nullptr )return;
+			*useCount = *useCount - 1;
+			if ( *useCount == 0 )
+			{
+				dealloc( valuePtr );
+				valuePtr = nullptr;
+				delete useCount;
+			}
+		}
 	};
+	
+	template<typename T , typename TTraits = ptr_traits<T>>
+	using unique_pointer = ptr<T , ptr_t::unique , TTraits>;
+	template<typename T , typename TTraits = ptr_traits<T>>
+	using abstract_pointer = ptr<T , ptr_t::abstract , TTraits>;
 
 	template<typename T , ptr_t TPtr = ptr_t::unique ,
 		typename TTraits = ptr_traits<T> , typename... Args>
@@ -234,6 +320,14 @@ namespace utils
 		typename TTraits = ptr_traits<T>>
 		void ptr<T , TPtr , TTraits>::dealloc( T* val ) noexcept;
 }
+
+namespace std
+{
+	template<typename T , utils::ptr_t TPtr ,
+		typename TTraits1 , typename TTraits2>
+		inline void swap( utils::ptr<T , TPtr , TTraits1>& lhs , utils::ptr<T , TPtr , TTraits1>& rhs ) noexcept { return lhs.swap( rhs ); }
+}
+
 #undef FLAG
 #undef FLAG_CT
 #undef FLAG_FUNCS_CT

@@ -17,12 +17,15 @@ namespace utils
 {
 	enum class from
 	{
-		static_array
+		static_array,
+		object
 	};
 
 	enum class error_type
 	{
-		invalidIndex
+		invalidIndex,
+		invalidObjectCast,
+		valueNotPresent
 	};
 
 	class operation_exception :std::exception
