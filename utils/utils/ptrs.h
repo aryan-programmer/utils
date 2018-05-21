@@ -206,6 +206,7 @@ namespace utils
 		T* operator->() { return valuePtr; }
 		T& operator*() { return *valuePtr; }
 		T* get() { return valuePtr; }
+		const T* get() const { return valuePtr; }
 		template<typename... Args>
 		void re_init_braced( Args&&... args )
 		{

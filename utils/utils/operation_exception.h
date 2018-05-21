@@ -17,14 +17,14 @@ namespace utils
 {
 	enum class from
 	{
-		static_array,
+		static_array ,
 		object
 	};
 
 	enum class error_type
 	{
-		invalidIndex,
-		invalidObjectCast,
+		invalidIndex ,
+		invalidObjectCast ,
 		valueNotPresent
 	};
 
@@ -41,29 +41,33 @@ namespace utils
 		inline const from get_thrower() { return _from; }
 		inline const error_type get_type() { return typeOfError; }
 		virtual char const* what() const noexcept override
-		{
-			return _what.c_str();
-		}
+		{ return _what.c_str(); }
 	};
 }
 namespace std
 {
-	inline string to_string( utils::from _Val )
+	string to_string( utils::from _Val )
 	{
 		switch ( _Val )
 		{
 		case utils::from::static_array:
 			return "static_array";
+		case utils::from::object:
+			return "object";
 		default:
 			return "?";
 		}
 	}
-	inline string to_string( utils::error_type _Val )
+	string to_string( utils::error_type _Val )
 	{
 		switch ( _Val )
 		{
 		case utils::error_type::invalidIndex:
 			return "invalidIndex";
+		case utils::error_type::invalidObjectCast:
+			return "invalidObjectCast";
+		case utils::error_type::valueNotPresent:
+			return "valueNotPresent";
 		default:
 			return "?";
 		}
