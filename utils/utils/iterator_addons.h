@@ -51,18 +51,18 @@ namespace utils
 	private:
 		explicit inline rec_iterator(
 			uint index ,
-			const static_array<T , ShiftValueSize>& seed , TFunc func ) noexcept :
+			const static_array<T , ShiftValueSize>& seed , const TFunc& func ) :
 			idex{ index } , regs{ seed } , func{ func }
 		{ }
 		explicit inline rec_iterator(
 			uint index ,
-			const std::initializer_list<T>& seed , TFunc func ) noexcept :
+			const std::initializer_list<T>& seed , const TFunc& func ) :
 			idex{ index } , regs{ seed } , func{ func }
 		{ }
 
 		uint idex{ 0 };
 		static_array<T , ShiftValueSize> regs;
-		TFunc func;
+		const TFunc& func;
 
 		template<typename T , int N , typename TFunc>
 		friend class rec_range;
@@ -83,14 +83,14 @@ namespace utils
 		const static_array<T , N> seed;
 		TFunc func;
 	public:
-		inline rec_range( TFunc func ,
+		inline rec_range( const TFunc& func ,
 						  uint iterations , const std::initializer_list<T>& seed ) :
-			iterations{ iterations } , seed{ seed } , func{ func }
+			iterations{ iterations } , seed( seed ) , func{ func }
 		{ }
-		inline rec_range( TFunc func ,
+		inline rec_range( const TFunc& func ,
 						  uint iterations ,
-						  const static_array<T , N> seed ) :
-			iterations{ iterations } , seed{ std::move( seed ) } , func{ func }
+						  const static_array<T , N>& seed ) :
+			iterations{ iterations } , seed{ seed } , func{ func }
 		{ }
 		inline iterator begin() const noexcept
 		{ return iterator{ 0,seed,func }; }
@@ -100,17 +100,32 @@ namespace utils
 		{ return iterations; }
 	};
 
-	template<int N , typename TFunc , typename T >
-	rec_range<T , N , TFunc> make_range( TFunc func ,
+	template<uint N , typename TFunc , typename T>
+	rec_range<T , N , TFunc> make_range( const TFunc& func ,
 										 uint iterations , const std::initializer_list<T>& seed )
 	{
 		return rec_range<T , N , TFunc>( func , iterations , seed );
 	}
-	template<int N , typename TFunc , typename T >
-	rec_range<T , N , TFunc> make_range( TFunc func ,
+	template<uint N , typename TFunc , typename T >
+	rec_range<T , N , TFunc> make_range( const TFunc& func ,
 										 uint iterations , const static_array<T , N>& seed )
 	{
 		return rec_range<T , N , TFunc>( func , iterations , seed );
+	}
+
+	template<uint N , typename T>
+	rec_range<T , N , T (*)(const static_array<T,N>&)> make_range( 
+		T (*func)(const static_array<T,N>&) ,
+		uint iterations , const std::initializer_list<T>& seed )
+	{
+		return rec_range<T , N , T (*)(const static_array<T,N>&)>( func , iterations , seed );
+	}
+	template<uint N , typename T >
+	rec_range<T , N , T (*)(const static_array<T,N>&)> make_range( 
+		T (*func)(const static_array<T,N>&),
+		uint iterations , const static_array<T , N>& seed )
+	{
+		return rec_range<T , N , T (*)(const static_array<T,N>&)>( func , iterations , seed );
 	}
 #pragma endregion
 
@@ -118,11 +133,11 @@ namespace utils
 	class iterator_pair
 	{
 	public:
-		explicit inline iterator_pair( iterator begin , iterator end ) noexcept :
+		explicit inline iterator_pair( const iterator& begin , const iterator& end ) noexcept :
 			_begin{ begin } , _end{ end } { }
 
-		iterator& begin() const { return _begin; }
-		iterator& end() const { return _end; }
+		iterator begin() const { return _begin; }
+		iterator end() const { return _end; }
 	private:
 		iterator _begin , _end;
 	};
@@ -133,11 +148,15 @@ namespace utils
 		T& t;
 	public:
 		explicit reverse_iterator_adapter( T& t ) noexcept : t( t ) { }
-		auto begin() ->decltype( t.rbegin() ) { return t.rbegin(); }
-		auto end()->decltype( t.rbegin() ) { return t.rend(); }
-		auto begin() const->decltype( t.rbegin() ) { return t.rbegin(); }
-		auto end() const->decltype( t.rbegin() ) { return t.rend(); }
+		auto begin() noexcept( noexcept( t.rbegin() ) ) ->decltype( t.rbegin() ) { return t.rbegin(); }
+		auto end() noexcept( noexcept( t.rend() ) ) ->decltype( t.rbegin() ) { return t.rend(); }
+		auto begin() const noexcept( noexcept( t.rbegin() ) ) ->decltype( t.rbegin() ) { return t.rbegin(); }
+		auto end() const noexcept( noexcept( t.rend() ) ) ->decltype( t.rbegin() ) { return t.rend(); }
 	};
+
+	template<typename T>
+	reverse_iterator_adapter<T> reverse_adapt( T& t )
+	{ return reverse_iterator_adapter<T>( t ); }
 
 #pragma region transform_if
 	template<
@@ -185,13 +204,6 @@ namespace std
 		using pointer = T * ;
 		using reference = T & ;
 	};
-	template<typename T , int N , typename TFunc>
-	const utils::rec_iterator<T , N , TFunc> begin( utils::rec_range<T , N , TFunc> range ) noexcept
-	{ return range.begin(); }
-
-	template<typename T , int N , typename TFunc>
-	const utils::rec_iterator<T , N , TFunc> end( utils::rec_range<T , N , TFunc> range ) noexcept
-	{ return range.end(); }
 }
 #endif // !__UTILITIES__ITERATOR__ADDONS__
 

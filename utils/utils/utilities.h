@@ -34,11 +34,18 @@ namespace utils
 	template<typename T> using rem_cvr = rem_ref<rem_cv<T>>;
 	template<typename T> using rem_cr = rem_ref<rem_const<T>>;
 
-#pragma region disable_if
-	template<bool , typename = void>struct _disable_if { };
+#pragma region disable_if and select_t
+	template<bool , typename = int>struct _disable_if { };
 	template<typename T>struct _disable_if<false , T> { using type = T; };
 	template<typename Test , class T = int>
 	using disable_if = typename _disable_if<Test::value , T>::type;
+
+	template<bool , typename T1 , typename T2>struct _select_t
+	{ using type = T1; };
+	template<typename T1 , typename T2>struct _select_t<false , T1 , T2>
+	{ using type = T2; };
+	template<typename Test , typename T1 , typename T2>
+	using select_t = typename _select_t<Test::value , T1 , T2>::type;
 #pragma endregion
 
 
@@ -56,7 +63,7 @@ namespace utils
 	template<typename T> struct is_const { enum { value = false }; };
 	template<typename T> struct is_const<const T> { enum { value = true }; };
 	template<typename T> struct is_volatile { enum { value = false }; };
-	template<typename T> struct is_volatile<volatile T> 
+	template<typename T> struct is_volatile<volatile T>
 	{ enum { value = true }; };
 
 	template<typename T1 , typename T2> using are_same_ignore_ref = are_same<rem_ref<T1> , rem_ref<T2>>;
@@ -73,7 +80,7 @@ namespace utils
 	bool is_rand_gen_initialized = false;
 
 	// Initializes the random number genreator with the current time as the seed.
-	inline void rand_init()
+	void rand_init()
 	{
 		if ( !is_rand_gen_initialized )
 		{
@@ -85,11 +92,11 @@ namespace utils
 		}
 	}
 
-	//void randinit( int seed )
-	//{
-	//	rand = std::mt19937_64( seed );
-	//	is_rand_gen_initialized = true;
-	//}
+	inline void rand_init( int seed )
+	{
+		rand_gen = std::mt19937_64( seed );
+		is_rand_gen_initialized = true;
+	}
 
 	// Returns a random long integer number between min [inclusive] and max [exclusive]
 	inline llong rand_long( llong min , llong max )
@@ -103,28 +110,30 @@ namespace utils
 	{ return static_cast<int>( rand_long( min , max ) ); }
 
 	// Returns a random element from the array you passed in
-	template <typename T , int N> inline T rand_elem( T( &arrayParam )[ N ] )
-	{ return arrayParam[ rand_int( 0 , N ) ]; }
+	template <typename Ds>
+	inline auto rand_elem( const Ds& ds )-> decltype( ds[ 0 ] )
+	{ return ds[ rand_int( 0 , N ) ]; }
 
 	// Shuffles the array you passed in
 	// WARNING: Will modify the array you passed in
-	template <typename T , std::size_t N> void shuffle_array( T( &arrayParam )[ N ] )
+	template <typename Ds> 
+	void shuffle_collection( const Ds& ds )
 	{
 		using std::swap;
 		for ( int i = 0; i < N - 1; i++ )
-			swap( arrayParam[ rand_long( i , N ) ] , arrayParam[ i ] );
+			swap( ds[ rand_int( i , N ) ] , ds[ i ] );
 	}
 #pragma endregion
 
 #pragma region Math Functions
 	// Returns the AbsoluteValue of the value you passed in.
-	constexpr inline uint abs( int value ) { return ( value < 0 ? -value : value ); }
+	constexpr inline uint abs( int value ) noexcept { return ( value < 0 ? -value : value ); }
 	// Returns the AbsoluteValue of the value you passed in.
-	constexpr inline float abs( float value ) { return ( value < 0 ? -value : value ); }
+	constexpr inline float abs( float value ) noexcept { return ( value < 0 ? -value : value ); }
 	// Returns the AbsoluteValue of the value you passed in.
-	constexpr inline double abs( double value ) { return ( value < 0 ? -value : value ); }
+	constexpr inline double abs( double value ) noexcept { return ( value < 0 ? -value : value ); }
 	// Returns the AbsoluteValue of the value you passed in.
-	constexpr inline real abs( real value ) { return ( value < 0 ? -value : value ); }
+	constexpr inline real abs( real value ) noexcept { return ( value < 0 ? -value : value ); }
 
 	// Repeats the value you passes in between 0 and max.
 	uint repeat( int value , uint max )
@@ -133,17 +142,17 @@ namespace utils
 		else if ( uint( value ) >= max )return value % max;
 		else return value;
 	}
-	llong floor( real valueToFloor )
+	inline llong floor( real valueToFloor ) noexcept
 	{ llong xi = llong( valueToFloor ); return valueToFloor < xi ? xi - 1 : xi; }
-	int floor( double valueToFloor )
+	inline int floor( double valueToFloor ) noexcept
 	{ int xi = int( valueToFloor ); return valueToFloor < xi ? xi - 1 : xi; }
-	int floor( float valueToFloor )
+	inline int floor( float valueToFloor ) noexcept
 	{ int xi = int( valueToFloor ); return valueToFloor < xi ? xi - 1 : xi; }
-	llong ceil( real valueToCeil )
+	inline llong ceil( real valueToCeil ) noexcept
 	{ llong xi = llong( valueToCeil ); return valueToCeil < xi ? xi : xi + 1; }
-	int ceil( double valueToCeil )
+	inline int ceil( double valueToCeil ) noexcept
 	{ int xi = int( valueToCeil ); return valueToCeil < xi ? xi : xi + 1; }
-	int ceil( float valueToCeil )
+	inline int ceil( float valueToCeil ) noexcept
 	{ int xi = int( valueToCeil ); return valueToCeil < xi ? xi : xi + 1; }
 #pragma endregion
 

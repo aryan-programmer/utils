@@ -7,20 +7,23 @@
 #include "utilities.h"
 namespace utils
 {
+	struct nullobj_t { };
+	const nullobj_t nullobj;
 
 	class object
 	{
 		template<typename T>
-		using disable_cond = disable_if<or_t<
+		using disable_cond = disable_if<
+			or_t<
 			are_same_ignore_ref<T , object> ,
-			are_same_ignore_ref<T , std::nullptr_t>>>;
+			are_same_ignore_ref<T , nullobj_t>>>;
 	public:
 		object() :vref( nullptr ) { }
 		template<typename T , disable_cond<T> = 0>
-		object( T&& value ) : vref( new TPtr<std::decay_t<T>>( std::forward<T>( value ) ) ) { }
+		object( T&& value ) : vref( new TPtr<typename std::decay<T>::type>( std::forward<T>( value ) ) ) { }
 		object( const object& obj ) { obj.vref->CopyTo( vref ); }
 		object( object&& obj ) :vref( std::move( obj.vref ) ) { }
-		object( std::nullptr_t ) : vref( nullptr ) { }
+		object( nullobj_t ) : vref( nullptr ) { }
 		object& operator=( object&& obj )
 		{
 			vref = std::move( obj.vref );
@@ -31,7 +34,7 @@ namespace utils
 			obj.vref->CopyTo( vref );
 			return *this;
 		}
-		object& operator=( std::nullptr_t )
+		object& operator=( nullobj_t )
 		{
 			vref = nullptr;
 			return *this;
@@ -39,17 +42,20 @@ namespace utils
 		template<typename T , disable_cond<T> = 0>
 		object& operator=( T&& value )
 		{
-			vref.reset( new TPtr<std::decay_t<T>>( std::forward<T>( value ) ) );
+			vref.reset( new TPtr<typename std::decay<T>::type>( std::forward<T>( value ) ) );
 			return *this;
 		}
 		template<typename T , typename... Args>
 		void emplace( Args&&... args )
-		{ vref.reset( new TPtr<T>( T( std::forward<Args>( args )... ) ) ); }
+		{ vref.reset( new TPtr<T>( std::forward<Args>( args )... ) ); }
 		template<typename T , typename... Args>
 		void emplace_braced( Args&&... args )
 		{ vref.reset( new TPtr<T>( T{ std::forward<Args>( args )... } ) ); }
 		const std::type_info& type() const { return vref ? vref->GetTypeInfo() : typeid( void ); }
 		inline explicit operator bool() const { return vref != nullptr; }
+
+		inline bool operator==( nullobj_t ) const { return vref == nullptr; }
+		inline bool operator!=( nullobj_t ) const { return vref != nullptr; }
 
 		void swap( object& rhs ) { vref.swap( rhs.vref ); }
 
@@ -62,19 +68,24 @@ namespace utils
 			ValidPtr() { }
 			virtual const std::type_info& GetTypeInfo() const = 0;
 			virtual void CopyTo( std::unique_ptr<ValidPtr>& ptr ) const = 0;
+			//virtual size_t GetHashCode() const = 0;
+			virtual ~ValidPtr() { }
 		};
 		template<typename T> class TPtr : public ValidPtr
 		{
 		public:
 			T value;
-			template<typename T_>
-			TPtr( T_&& value ) : value( std::forward<T_>( value ) ) { }
+			template<typename... T_>
+			TPtr( T_&&... value ) : value( std::forward<T_>( value )... ) { }
 			// Inherited via ValidPtr
 			virtual const std::type_info& GetTypeInfo() const override
 			{ return typeid( value ); }
+			/*virtual size_t GetHashCode() const override
+			{ return std::hash<T>()( value ); }*/
 
 			// Inherited via ValidPtr
 			virtual void CopyTo( std::unique_ptr<ValidPtr>& ptr ) const override { ptr.reset( new TPtr<T>( value ) ); }
+			virtual ~TPtr() override { }
 		};
 		std::unique_ptr<ValidPtr> vref;
 
@@ -84,13 +95,15 @@ namespace utils
 		friend inline T& obj_cast( const object& obj );
 		template<typename T>
 		friend inline T* obj_cast( const object* obj ) noexcept;
+		//friend class std::hash<object>;
 	};
 
 	template<typename T>inline T* obj_cast( const object* obj ) noexcept
 	{
 		if ( !obj->vref )return nullptr;
 
-		object::TPtr<T>* tptr = dynamic_cast<object::TPtr<T>*>( obj->vref.get() );
+		object::TPtr<T>* tptr = 
+			dynamic_cast<object::TPtr<T>*>( obj->vref.get() );
 
 		if ( !tptr )return nullptr;
 		return &( tptr->value );
@@ -115,6 +128,14 @@ namespace utils
 namespace std
 {
 	inline void swap( utils::object& lhs , utils::object& rhs ) noexcept { lhs.swap( rhs ); }
+
+	//template<>
+	//struct hash<utils::object>
+	//{
+	//	_NODISCARD size_t operator()( const utils::object& obj ) const
+	//	{ return obj.vref->GetHashCode(); }
+	//};
+
 }
 #endif // !__UTILITIES__OBJECT__
 

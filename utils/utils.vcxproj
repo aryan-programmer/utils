@@ -161,8 +161,10 @@
     <ClInclude Include="utils\macros\flags.h" />
     <ClInclude Include="utils\object.h" />
     <ClInclude Include="utils\operation_exception.h" />
+    <ClInclude Include="utils\optional.h" />
     <ClInclude Include="utils\ptrs.h" />
     <ClInclude Include="utils\static_array.h" />
+    <ClInclude Include="utils\trie.h" />
     <ClInclude Include="utils\type_at_index.h" />
     <ClInclude Include="utils\utilities.h" />
   </ItemGroup>
