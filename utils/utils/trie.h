@@ -1,7 +1,7 @@
 #pragma once
 #ifndef __UTILITIES__TRIE__
 #define __UTILITIES__TRIE__
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <list>
 #include "utilities.h"
@@ -216,7 +216,7 @@ namespace utils
 	struct trie_node
 	{
 		using self = trie_node<T , CommentType>;
-		std::map<T , self> table;
+		std::unordered_map<T , self> table;
 		using is_word_and_comment_t =
 			select_t<
 			are_same_ignore_ref<CommentType , void> ,
@@ -275,12 +275,12 @@ namespace utils
 		trie_node_t root;
 	public:
 		using indexing_value = typename trie_node_t::const_is_word_and_dynamic_comment_ref_t;
-		using orig_map_value = typename trie_node_t::is_word_and_comment_t;
+		using orig_unordered_map_value = typename trie_node_t::is_word_and_comment_t;
 		using value_type = ValueType;
 		using key_type = ValueType;
-		using mapped_type = optional<indexing_value>;
+		using unordered_mapped_type = optional<indexing_value>;
 		trie() :root{} { }
-		mapped_type insert( const ValueType& ds_v )
+		unordered_mapped_type insert( const ValueType& ds_v )
 		{
 			trie_node_t* n = &root;
 			for ( auto& value : ds_v )
@@ -288,7 +288,7 @@ namespace utils
 			n->is_word_and_comment.first = true;
 			return n->get_CIWADyCRef();
 		}
-		mapped_type insert( ValueType&& ds_v )
+		unordered_mapped_type insert( ValueType&& ds_v )
 		{
 			trie_node_t* n = &root;
 			for ( auto& value : ds_v )
@@ -326,11 +326,11 @@ namespace utils
 					insert( std::move( ds ) );
 		}
 
-		optional<orig_map_value> remove_word( const ValueType& ds_v )
+		optional<orig_unordered_map_value> remove_word( const ValueType& ds_v )
 		{
 			trie_node_t* n = &root;
 			std::list<trie_node_t*> path{};
-			optional<orig_map_value> ret_val = nullopt;
+			optional<orig_unordered_map_value> ret_val = nullopt;
 			for ( auto& value : ds_v )
 			{
 				auto iter_to_value = n->table.find( value );
@@ -365,7 +365,7 @@ namespace utils
 			return ret_val;
 		}
 
-		mapped_type at_prefix( const ValueType& ds_v )
+		unordered_mapped_type at_prefix( const ValueType& ds_v )
 		{
 			trie_node_t* n = &root;
 			for ( auto& value : ds_v )
@@ -377,7 +377,7 @@ namespace utils
 			return n->get_CIWADyCRef();
 		}
 
-		mapped_type at( const ValueType& ds_v )
+		unordered_mapped_type at( const ValueType& ds_v )
 		{
 			auto ret_val = at_prefix( ds_v );
 			if ( !ret_val )return nullopt;
@@ -385,14 +385,14 @@ namespace utils
 			return ret_val;
 		}
 
-		inline mapped_type operator[]( const ValueType& ds_v )
+		inline unordered_mapped_type operator[]( const ValueType& ds_v )
 		{
 			auto ret_val = at( ds_v );
 			if ( !ret_val )return insert( ds_v );
 			return ret_val;
 		}
 
-		inline mapped_type operator[]( ValueType&& ds_v )
+		inline unordered_mapped_type operator[]( ValueType&& ds_v )
 		{
 			auto ret_val = at( ds_v );
 			if ( !ret_val )return insert( std::forward<ValueType>( ds_v ) );

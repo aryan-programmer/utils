@@ -112,16 +112,14 @@ namespace utils
 	template<typename T>inline T& obj_cast( const object& obj )
 	{
 		T* ptr = obj_cast<T>( &obj );
-		if ( !ptr )
-			throw operation_exception( from::object , error_type::invalidObjectCast );
+		if ( !ptr )throw invalid_object_cast();
 		return *ptr;
 	}
 
 	template<typename T>inline T obj_cast( object&& obj )
 	{
 		T* ptr = obj_cast<T>( &obj );
-		if ( !ptr )
-			throw operation_exception( from::object , error_type::invalidObjectCast );
+		if ( !ptr )throw invalid_object_cast();
 		return std::move( *ptr );
 	}
 }

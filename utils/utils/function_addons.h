@@ -12,11 +12,14 @@ namespace utils
 		using base = func_chain_func<Ts...>;
 		T func;
 		template<typename... Args>
-		inline func_chain_func( T func , Args&&... funcs ) :func{ func } ,
-			base{ std::forward<Args>( funcs )... } { }
+		inline func_chain_func( T func , Args&&... funcs ) :
+			func{ func } ,
+			base{ std::forward<Args>( funcs )... }
+		{ }
 		template<typename... Args>
 		inline auto operator()( Args&&... args )->
-			decltype( func( base::operator()( std::forward<Args>( args )... ) ) )
+			decltype( 
+				func( base::operator()( std::forward<Args>( args )... ) ) )
 		{
 			return func(
 				base::operator()( std::forward<Args>( args )... ) );
@@ -35,6 +38,7 @@ namespace utils
 			return func( std::forward<Args>( args )... );
 		}
 	};
+
 	/*
 	 * Given any list of any functions taking just
 	 * one parameter and returning a value that can

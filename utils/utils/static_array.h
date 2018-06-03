@@ -14,7 +14,7 @@ namespace utils
 		constexpr const uint __Internal_CheckIndex( const uint index ) const
 		{
 			if ( llong( index ) > llong( size ) )
-				throw operation_exception( from::static_array , error_type::invalidIndex );
+				throw invalid_index( from::static_array );
 			return index;
 		}
 	public:

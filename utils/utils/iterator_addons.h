@@ -114,18 +114,18 @@ namespace utils
 	}
 
 	template<uint N , typename T>
-	rec_range<T , N , T (*)(const static_array<T,N>&)> make_range( 
-		T (*func)(const static_array<T,N>&) ,
+	rec_range<T , N , T( *)( const static_array<T , N>& )> make_range(
+		T( *func )( const static_array<T , N>& ) ,
 		uint iterations , const std::initializer_list<T>& seed )
 	{
-		return rec_range<T , N , T (*)(const static_array<T,N>&)>( func , iterations , seed );
+		return rec_range<T , N , T( *)( const static_array<T , N>& )>( func , iterations , seed );
 	}
 	template<uint N , typename T >
-	rec_range<T , N , T (*)(const static_array<T,N>&)> make_range( 
-		T (*func)(const static_array<T,N>&),
+	rec_range<T , N , T( *)( const static_array<T , N>& )> make_range(
+		T( *func )( const static_array<T , N>& ) ,
 		uint iterations , const static_array<T , N>& seed )
 	{
-		return rec_range<T , N , T (*)(const static_array<T,N>&)>( func , iterations , seed );
+		return rec_range<T , N , T( *)( const static_array<T , N>& )>( func , iterations , seed );
 	}
 #pragma endregion
 
@@ -180,6 +180,31 @@ namespace utils
 		return output;
 	}
 #pragma endregion
+	template<typename Char_t, typename OutputIterator>
+	void split( const std::basic_string<Char_t>& text , OutputIterator output , const std::basic_string<Char_t>& delims )
+	{
+		std::size_t start = text.find_first_not_of( delims ) , 
+			end = 0;
+
+		while ( 
+			( end = text.find_first_of( delims , start ) ) != std::basic_string<Char_t>::npos )
+		{
+			*output = text.substr( start , end - start );
+			output++;
+			start = text.find_first_not_of( delims , end );
+		}
+		if ( start != std::basic_string<Char_t>::npos )
+			*output = text.substr( start );
+	}
+	
+	template<typename Char_t, typename OutputIterator>
+	void split( const Char_t* text , OutputIterator&& output , const Char_t* delims )
+	{
+		split<Char_t>( 
+			std::basic_string<Char_t>( text ) , 
+			std::forward<OutputIterator>( output ) , 
+			std::basic_string<Char_t>( delims ));
+	}
 
 #pragma region Iterator Trait Typedefs
 	template<typename Iterator>

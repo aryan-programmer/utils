@@ -46,6 +46,9 @@ namespace utils
 	{ using type = T2; };
 	template<typename Test , typename T1 , typename T2>
 	using select_t = typename _select_t<Test::value , T1 , T2>::type;
+
+	template<bool __value__>
+	struct value_to_t { enum { value = __value__ }; };
 #pragma endregion
 
 
@@ -116,7 +119,7 @@ namespace utils
 
 	// Shuffles the array you passed in
 	// WARNING: Will modify the array you passed in
-	template <typename Ds> 
+	template <typename Ds>
 	void shuffle_collection( const Ds& ds )
 	{
 		using std::swap;

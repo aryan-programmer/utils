@@ -156,9 +156,11 @@
     <ClInclude Include="utils\ext_meth.h" />
     <ClInclude Include="utils\ext_meth_generic.h" />
     <ClInclude Include="utils\function_addons.h" />
+    <ClInclude Include="utils\hashing.h" />
     <ClInclude Include="utils\iterator_addons.h" />
     <ClInclude Include="utils\macros\ext_meth_singular.h" />
     <ClInclude Include="utils\macros\flags.h" />
+    <ClInclude Include="utils\macros\macros.h" />
     <ClInclude Include="utils\object.h" />
     <ClInclude Include="utils\operation_exception.h" />
     <ClInclude Include="utils\optional.h" />

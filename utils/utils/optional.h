@@ -62,4 +62,18 @@ namespace utils
 		~optional() { }
 	};
 }
+namespace std
+{
+	template<typename T>
+	struct hash<utils::optional<T>>
+	{
+		using argument_type = utils::optional<T>;
+		using result_type = size_t;
+
+		size_t operator()( const utils::optional<T>& opt ) noexcept(_Is_nothrow_hashable<typename unique_ptr<T>::pointer>::value)
+		{
+			return hash<unique_ptr<T>>()( opt );
+		}
+	};
+}
 #endif // !__UTILITIES__OPTIONAL__
