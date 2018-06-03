@@ -211,8 +211,7 @@ namespace utils
 	using iter_diff =
 		typename std::iterator_traits<Iterator>::difference_type;
 	template<typename Iterator>
-	using iter_val_t =
-		typename std::iterator_traits<Iterator>::value_type;
+	using iter_val_t = typename std::iterator_traits<Iterator>::value_type;
 	template<typename Iterator>
 	using iter_category =
 		typename std::iterator_traits<Iterator>::iterator_category;

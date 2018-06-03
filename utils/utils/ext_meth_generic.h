@@ -7,11 +7,11 @@
 #define __UTILITIES__DEFINE_EXTENSION_METHOD_CALL_OP_PAREN(op)\
 template<typename TFirst , typename TFunc>\
 auto inline operator __UTILITIES_REM_PAREN op( TFirst&& callee , TFunc&& func ) -> decltype( std::forward<TFunc>( func )( std::forward<TFirst>( callee ) ) )\
-{return std::forward<TFunc>( func )( std::forward<TFirst>( callee ) );}\
-template<typename TFirst , typename TFunc>\
-auto inline operator __UTILITIES_REM_PAREN op( TFirst&& callee , TFunc&& func ) -> decltype( std::forward<TFunc>( func ).call\
-	( std::forward<TFirst>( callee ) ) )\
-{return std::forward<TFunc>( func ).call( std::forward<TFirst>( callee ) );}
+{return std::forward<TFunc>( func )( std::forward<TFirst>( callee ) );}
+//template<typename TFirst , typename TFunc>\
+//auto inline operator __UTILITIES_REM_PAREN op( TFirst&& callee , TFunc&& func ) -> decltype( std::forward<TFunc>( func ).call\
+//	( std::forward<TFirst>( callee ) ) )\
+//{return std::forward<TFunc>( func ).call( std::forward<TFirst>( callee ) );}
 #define __UTILITIES__DEFINE_EXTENSION_METHOD_CALL_OP(op) __UTILITIES__DEFINE_EXTENSION_METHOD_CALL_OP_PAREN((op))
 #pragma endregion
 

@@ -5,6 +5,7 @@
 #include "operation_exception.h"
 #include <type_traits>
 #include <initializer_list>
+#include "hashing.h"
 namespace utils
 {
 	template<typename T , uint size>
@@ -88,11 +89,17 @@ namespace utils
 			if ( Index < 0 )Index = endIndex + Index;
 			return elementArray[ __Internal_CheckIndex( Index ) ];
 		}
-		T* begin() const noexcept { return elementArray; }
-		T* end() const noexcept { return elementArray + size; }
-		std::reverse_iterator<T*> rbegin() const noexcept
+		T* begin() noexcept { return elementArray; }
+		T* end() noexcept { return elementArray + size; }
+		const T* begin() const noexcept { return elementArray; }
+		const T* end() const noexcept { return elementArray + size; }
+		std::reverse_iterator<const T*> rbegin() const noexcept
+		{ return ( std::reverse_iterator<const T*>( elementArray + size ) ); }
+		std::reverse_iterator<const T*> rend() const noexcept
+		{ return ( std::reverse_iterator<const T*>( elementArray ) ); }
+		std::reverse_iterator<T*> rbegin() noexcept
 		{ return ( std::reverse_iterator<T*>( elementArray + size ) ); }
-		std::reverse_iterator<T*> rend() const noexcept
+		std::reverse_iterator<T*> rend() noexcept
 		{ return ( std::reverse_iterator<T*>( elementArray ) ); }
 		constexpr bool empty() const noexcept { return false; }
 
@@ -105,6 +112,25 @@ namespace utils
 
 		T* data() { return elementArray; }
 		constexpr const T* data() const { return elementArray; }
+	};
+}
+namespace std
+{
+	template<typename T , utils::uint size>
+	struct hash<utils::static_array<T , size>>
+	{
+		using argument_type = utils::static_array<T , size>;
+		using result_type = size_t;
+
+		result_type operator()( utils::static_array<T , size>& array_ )
+		{
+			return utils::hash_seq( array_.begin() , array_.end() );
+		}
+
+		result_type operator()( utils::static_array<T , size>&& array_ )
+		{
+			return utils::hash_seq( array_.begin() , array_.end() );
+		}
 	};
 }
 #endif // !__UTILITIES__STATIC_ARRAY__
