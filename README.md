@@ -18,7 +18,7 @@ to check for certain attributes on types,
 or the select_tto select a type if a condition evaluates to true.
 
 The iterator_addons.hheader file contains
-the classes rec_range paired with rec_iteratorwhich are best described and explained in this current video.
+the classes rec_range paired with rec_iteratorwhich are best described and explained in my youtube video channel.
 
 And the class iterator_pairto pair begin and end iterators such that iterator_pair::begin() returns the first iterator and iterator_pair::end() returns the second iterator.
 
@@ -28,7 +28,7 @@ Along with a transform_iffunctionbest described and explained in my youtube vide
 
 And multiple using type-alias related to std::iterator_traits to shorten typing.
 
-The object.hheader file contains a class called object that can hold a value of any type like a void* and it also occupies as-much-as space, on the heap (or free-store) and on the stack, as a void*.
+The object.h header file contains a class called object that can hold a value of any type like a void* and it also occupies as-much-as space, on the heap (or free-store) and on the stack, as a void*.
 
 The function obj_cast returns a reference/pointer to the value held in the object.
 
