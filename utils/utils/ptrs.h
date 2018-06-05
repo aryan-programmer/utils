@@ -1,16 +1,12 @@
 #pragma once
 #ifndef __UTILITIES__GARBAGE_COLLECTION__POINTER_WRAPPERS__
 #define __UTILITIES__GARBAGE_COLLECTION__POINTER_WRAPPERS__
-#pragma push_macro("FLAG")
-#pragma push_macro("FLAG_FUNCS_CT")
-#undef FLAG
-#undef FLAG_FUNCS_CT
 #include "macros\flags.h"
 #include <type_traits>
 #include <utility>
 namespace utils
 {
-	FLAG( ptr_t )
+	UTILS_FLAG( ptr_t )
 	{
 		unique = 1 << 0 ,
 			abstract = 1 << 1 ,
@@ -326,9 +322,4 @@ namespace std
 		typename TTraits1 , typename TTraits2>
 		inline void swap( utils::ptr<T , TPtr , TTraits1>& lhs , utils::ptr<T , TPtr , TTraits1>& rhs ) noexcept { return lhs.swap( rhs ); }
 }
-
-#undef FLAG
-#undef FLAG_FUNCS_CT
-#pragma pop_macro("FLAG")
-#pragma pop_macro("FLAG_FUNCS_CT")  
 #endif // !__UTILITIES__GARBAGE_COLLECTION__POINTER_WRAPPERS__

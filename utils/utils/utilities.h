@@ -47,27 +47,26 @@ namespace utils
 	template<typename Test , typename T1 , typename T2>
 	using select_t = typename _select_t<Test::value , T1 , T2>::type;
 
-	template<bool __value__>
-	struct value_to_t { enum { value = __value__ }; };
+	template<bool _value>
+	using val_to_t = std::bool_constant<_value>;
 #pragma endregion
 
 
-	template<typename T1 , typename T2>struct are_same
-	{ enum { value = false }; };
-	template<typename T>struct are_same<T , T> { enum { value = true }; };
+	template<typename T1 , typename T2>struct are_same :std::false_type { };
+	template<typename T>struct are_same<T , T> :std::true_type { };
 
-	template<typename T>struct is_lval_ref { enum { value = false }; };
-	template<typename T>struct is_lval_ref<T&> { enum { value = true }; };
-	template<typename T>struct is_rval_ref { enum { value = false }; };
-	template<typename T>struct is_rval_ref<T&&> { enum { value = true }; };
-	template<typename T>struct is_ref
-	{ enum { value = is_lval_ref<T>::value || is_rval_ref<T>::value }; };
+	template<typename T>struct is_lval_ref :std::false_type { };
+	template<typename T>struct is_lval_ref<T&> :std::true_type { };
+	template<typename T>struct is_rval_ref :std::false_type { };
+	template<typename T>struct is_rval_ref<T&&> :std::true_type { };
+	template<typename T>struct is_ref :std::false_type { };
+	template<typename T>struct is_ref<T&> :std::true_type { };
+	template<typename T>struct is_ref<T&&> :std::true_type { };
 
-	template<typename T> struct is_const { enum { value = false }; };
-	template<typename T> struct is_const<const T> { enum { value = true }; };
-	template<typename T> struct is_volatile { enum { value = false }; };
-	template<typename T> struct is_volatile<volatile T>
-	{ enum { value = true }; };
+	template<typename T> struct is_const :std::false_type { };
+	template<typename T> struct is_const<const T> :std::true_type { };
+	template<typename T> struct is_volatile :std::false_type { };
+	template<typename T> struct is_volatile<volatile T> :std::true_type { };
 
 	template<typename T1 , typename T2> using are_same_ignore_ref = are_same<rem_ref<T1> , rem_ref<T2>>;
 
@@ -434,7 +433,7 @@ namespace utils
 		};
 	}
 
-
+	// constants
 	constexpr uint defaultLength = 5;
 	constexpr uint defaultLengthIncrement = 5;
 	constexpr int defaultEndIndex = -1;

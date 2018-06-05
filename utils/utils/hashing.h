@@ -1,11 +1,12 @@
 #pragma once
 #ifndef __UTILITIES__HASHING__
+#define __UTILITIES__HASHING__
 #include <utility>
 #include "utilities.h"
 #include "iterator_addons.h"
 namespace utils
 {
-	size_t hash_combine( size_t seed , size_t hash2 )
+	constexpr size_t hash_combine( size_t seed , size_t hash2 )
 	{
 		return seed ^ ( hash2 + 0x9e3779b9 + ( seed << 6 ) + ( seed >> 2 ) );
 	}
@@ -17,8 +18,7 @@ namespace utils
 	{
 		size_t hash_ = seed1;
 		for ( ; begin != end; ++begin )
-			hash_ *= seed2 + 
-			std::hash<typename std::iterator_traits<Iterator>::value_type>()( *begin );
+			hash_ *= seed2 + std::hash<typename std::iterator_traits<Iterator>::value_type>()( *begin );
 		return hash_;
 	}
 

@@ -102,14 +102,14 @@ namespace utils
 
 #pragma region For each value
 	template<typename Func , typename Arg , typename... Args>
-	constexpr inline void for_each_value( Func&& func , Arg&& arg , Args&& ...args )
+	inline void for_each_value( Func&& func , Arg&& arg , Args&& ...args )
 	{
 		func( std::forward<Arg>( arg ) );
 		for_each_value(
 			std::forward<Func>( func ) , std::forward<Args>( args )... );
 	}
 	template<typename Func , typename Arg>
-	constexpr inline void for_each_value( Func&& func , Arg&& arg )
+	inline void for_each_value( Func&& func , Arg&& arg )
 	{
 		std::forward<Func>( func )( std::forward<Arg>( arg ) );
 	}

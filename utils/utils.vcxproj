@@ -164,6 +164,7 @@
     <ClInclude Include="utils\object.h" />
     <ClInclude Include="utils\operation_exception.h" />
     <ClInclude Include="utils\optional.h" />
+    <ClInclude Include="utils\property.h" />
     <ClInclude Include="utils\ptrs.h" />
     <ClInclude Include="utils\static_array.h" />
     <ClInclude Include="utils\trie.h" />

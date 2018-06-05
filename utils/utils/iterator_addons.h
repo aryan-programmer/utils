@@ -133,9 +133,6 @@ namespace utils
 	class iterator_pair
 	{
 	public:
-		explicit inline iterator_pair( const iterator& begin , const iterator& end ) noexcept :
-			_begin{ begin } , _end{ end } { }
-
 		iterator begin() const { return _begin; }
 		iterator end() const { return _end; }
 	private:
@@ -157,6 +154,18 @@ namespace utils
 	template<typename T>
 	reverse_iterator_adapter<T> reverse_adapt( T& t )
 	{ return reverse_iterator_adapter<T>( t ); }
+
+	template<typename Iterator1 , typename Iterator2>
+	inline iterator_pair<rem_ref<Iterator1>> pair_iterator(
+		Iterator1&& begin ,
+		Iterator2&& end )
+	{
+		return iterator_pair<rem_ref<Iterator1>>
+		{
+			std::forward<Iterator1>( begin ) ,
+				std::forward<Iterator2>( end )
+		};
+	}
 
 #pragma region transform_if
 	template<
@@ -180,13 +189,13 @@ namespace utils
 		return output;
 	}
 #pragma endregion
-	template<typename Char_t, typename OutputIterator>
+	template<typename Char_t , typename OutputIterator>
 	void split( const std::basic_string<Char_t>& text , OutputIterator output , const std::basic_string<Char_t>& delims )
 	{
-		std::size_t start = text.find_first_not_of( delims ) , 
+		std::size_t start = text.find_first_not_of( delims ) ,
 			end = 0;
 
-		while ( 
+		while (
 			( end = text.find_first_of( delims , start ) ) != std::basic_string<Char_t>::npos )
 		{
 			*output = text.substr( start , end - start );
@@ -196,14 +205,14 @@ namespace utils
 		if ( start != std::basic_string<Char_t>::npos )
 			*output = text.substr( start );
 	}
-	
-	template<typename Char_t, typename OutputIterator>
+
+	template<typename Char_t , typename OutputIterator>
 	void split( const Char_t* text , OutputIterator&& output , const Char_t* delims )
 	{
-		split<Char_t>( 
-			std::basic_string<Char_t>( text ) , 
-			std::forward<OutputIterator>( output ) , 
-			std::basic_string<Char_t>( delims ));
+		split<Char_t>(
+			std::basic_string<Char_t>( text ) ,
+			std::forward<OutputIterator>( output ) ,
+			std::basic_string<Char_t>( delims ) );
 	}
 
 #pragma region Iterator Trait Typedefs

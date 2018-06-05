@@ -75,6 +75,9 @@
     <ClInclude Include="utils\macros\macros.h">
       <Filter>Header Files\utils\macros</Filter>
     </ClInclude>
+    <ClInclude Include="utils\property.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
