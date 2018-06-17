@@ -1,11 +1,11 @@
 #pragma once
 #ifndef __UTILITIES__STATIC_ARRAY__
 #define __UTILITIES__STATIC_ARRAY__
-#include "utilities.h"
-#include "operation_exception.h"
+#include "utilities.hpp"
+#include "operation_exception.hpp"
 #include <type_traits>
 #include <initializer_list>
-#include "hashing.h"
+#include "hashing.hpp"
 namespace utils
 {
 	template<typename T , uint size>

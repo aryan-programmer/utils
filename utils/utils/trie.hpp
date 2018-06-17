@@ -4,9 +4,9 @@
 #include <unordered_map>
 #include <string>
 #include <list>
-#include "utilities.h"
-#include "optional.h"
-#include "iterator_addons.h"
+#include "utilities.hpp"
+#include "optional.hpp"
+#include "iterator_addons.hpp"
 
 namespace utils
 {
@@ -15,15 +15,15 @@ namespace utils
 	template<typename T>
 	struct pair_void_t;
 
-	template<typename T1 , typename T2>
-	using pair =
+	template<typename T , typename T2>
+	using void_able_pair =
 		select_t<
-		are_same_ignore_ref<T1 , void> ,
-		pair_void_t<T1> ,
+		are_same_ignore_ref<T , void> ,
+		pair_void_t<T> ,
 		select_t<
 		are_same_ignore_ref<T2 , void> ,
-		pair_t_void<T1> ,
-		std::pair<T1 , T2>>>;
+		pair_t_void<T> ,
+		std::pair<T , T2>>>;
 
 
 	template<typename T>
@@ -220,13 +220,13 @@ namespace utils
 		using is_word_and_comment_t =
 			select_t<
 			are_same_ignore_ref<CommentType , void> ,
-			pair<bool , void> ,
-			pair<bool , optional<CommentType>>>;
+			void_able_pair<bool , void> ,
+			void_able_pair<bool , optional<CommentType>>>;
 		using const_is_word_and_dynamic_comment_ref_t =
 			select_t<
 			are_same_ignore_ref<CommentType , void> ,
-			pair<const bool& , void> ,
-			pair<const bool& , optional<CommentType>&>>;
+			void_able_pair<const bool& , void> ,
+			void_able_pair<const bool& , optional<CommentType>&>>;
 		is_word_and_comment_t is_word_and_comment;
 		trie_node() :table{ } , is_word_and_comment{ } { }
 		trie_node( std::nullptr_t ) :table{ } , is_word_and_comment{ } { }
@@ -330,17 +330,17 @@ namespace utils
 		{
 			trie_node_t* n = &root;
 			std::list<trie_node_t*> path{};
-			optional<orig_unordered_map_value> ret_val = nullopt;
+			optional<orig_unordered_map_value> ret_val = null;
 			for ( auto& value : ds_v )
 			{
 				auto iter_to_value = n->table.find( value );
-				if ( iter_to_value == n->table.end() ) return nullopt;
+				if ( iter_to_value == n->table.end() ) return null;
 				path.push_back( n );
 				n = &iter_to_value->second;
 			}
 			path.push_back( n );
 			ret_val = n->is_word_and_comment;
-			if ( n->is_word_and_comment.first == false )return nullopt;
+			if ( n->is_word_and_comment.first == false )return null;
 			n->is_word_and_comment.first = false;
 
 			/// Delete un-needed nodes
@@ -371,7 +371,7 @@ namespace utils
 			for ( auto& value : ds_v )
 			{
 				auto iter_to_value = n->table.find( value );
-				if ( iter_to_value == n->table.end() ) return nullopt;
+				if ( iter_to_value == n->table.end() ) return null;
 				n = &iter_to_value->second;
 			}
 			return n->get_CIWADyCRef();
@@ -380,8 +380,8 @@ namespace utils
 		unordered_mapped_type at( const ValueType& ds_v )
 		{
 			auto ret_val = at_prefix( ds_v );
-			if ( !ret_val )return nullopt;
-			if ( ret_val->first == false )return nullopt;
+			if ( !ret_val )return null;
+			if ( ret_val->first == false )return null;
 			return ret_val;
 		}
 

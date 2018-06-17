@@ -2,8 +2,8 @@
 #ifndef __UTILITIES__HASHING__
 #define __UTILITIES__HASHING__
 #include <utility>
-#include "utilities.h"
-#include "iterator_addons.h"
+#include "utilities.hpp"
+#include "iterator_addons.hpp"
 namespace utils
 {
 	constexpr size_t hash_combine( size_t seed , size_t hash2 )

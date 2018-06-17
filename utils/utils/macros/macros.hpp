@@ -3,6 +3,7 @@
 #define __UTILITIES__MACROS__
 #include <utility>
 #include <iterator>
+#include <cassert>
 #define UTILS_FOREACH(var, coll, block)\
 {\
  auto& __cOlL__ = coll;\
@@ -20,22 +21,51 @@
 }
 
 #ifdef _MSVC_LANG
-#if _MSVC_LANG < 201402
-#define UTILS_DELETE_FUCTION_SCOPE private
-#define UTILS_DELETE_FUNCTION_DEF(f) ;
+#define __CPP_LANG _MSVC_LANG
 #else
-#define UTILS_DELETE_FUCTION_SCOPE public
-#define UTILS_DELETE_FUNCTION_DEF(f) f = delete;
-#endif // _MSVC_LANG < 201402
-#else
-#if __cplusplus < 201402
-#define UTILS_DELETE_FUCTION_SCOPE private
-#define UTILS_DELETE_FUNCTION_DEF(f) ;
-#else
-#define UTILS_DELETE_FUCTION_SCOPE public
-#define UTILS_DELETE_FUNCTION_DEF(f) f = delete;
-#endif // __cplusplus < 201402
+#define __CPP_LANG __cplusplus
 #endif // _MSVC_LANG
+
+
+#if __CPP_LANG > 201402
+#define _HAS_CPP17 1
+#define _HAS_CPP14 1
+#define _HAS_CPP11 1
+#elif __CPP_LANG > 201103
+#define _HAS_CPP17 0
+#define _HAS_CPP14 1
+#define _HAS_CPP11 1
+#elif __CPP_LANG > 199711
+#define _HAS_CPP17 0
+#define _HAS_CPP14 0
+#define _HAS_CPP11 1
+#else
+#define _HAS_CPP17 0
+#define _HAS_CPP14 0
+#define _HAS_CPP11 0
+#endif
+
+#if !_HAS_CPP14
+#define UTILS_DELETE_FUCTION_SCOPE private
+#define UTILS_DELETE_FUNCTION_DEF(f) ;
+#define CPP_14_RELAXED_CONSTEXPR constexpr
+#else
+#define UTILS_DELETE_FUCTION_SCOPE public
+#define UTILS_DELETE_FUNCTION_DEF(f) f = delete;
+#define CPP_14_RELAXED_CONSTEXPR
+#endif // __CPP_LANG < 201402
+
+#ifdef _DEBUG
+#	define ASSERT assert
+#else
+#	ifdef DEBUG
+#		define ASSERT assert
+#	else
+		define ASSERT(expr)
+#	endif // DEBUG
+#endif
+
+
 #define UTILS_DELETE_FUNCTION_DECL(f) f;
 #define UTILS_DELETE_FUNCTION(f) UTILS_DELETE_FUNCTION_DEF(f)
 

@@ -27,56 +27,59 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils\function_addons.h">
+    <ClInclude Include="utils\ext_meth.hpp">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\iterator_addons.h">
+    <ClInclude Include="utils\ext_meth_generic.hpp">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\operation_exception.h">
+    <ClInclude Include="utils\function_addons.hpp">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\static_array.h">
+    <ClInclude Include="utils\hashing.hpp">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\utilities.h">
+    <ClInclude Include="utils\iterator_addons.hpp">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\ptrs.h">
+    <ClInclude Include="utils\object.hpp">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\type_at_index.h">
+    <ClInclude Include="utils\operation_exception.hpp">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\macros\flags.h">
+    <ClInclude Include="utils\optional.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\property.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\ptrs.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\reflection.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\static_array.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\trie.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\type_at_index.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\utilities.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\macros\ext_meth_singular.hpp">
       <Filter>Header Files\utils\macros</Filter>
     </ClInclude>
-    <ClInclude Include="utils\macros\ext_meth_singular.h">
+    <ClInclude Include="utils\macros\flags.hpp">
       <Filter>Header Files\utils\macros</Filter>
     </ClInclude>
-    <ClInclude Include="utils\ext_meth.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\ext_meth_generic.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\object.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\optional.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\trie.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\hashing.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\macros\macros.h">
+    <ClInclude Include="utils\macros\macros.hpp">
       <Filter>Header Files\utils\macros</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\property.h">
-      <Filter>Header Files\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

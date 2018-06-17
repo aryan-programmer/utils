@@ -72,28 +72,29 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_66_0;$(IncludePath)</IncludePath>
+    <IncludePath>E:\CPPInstallations\boost\boost_1_66_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_66_0;$(IncludePath)</IncludePath>
+    <IncludePath>E:\CPPInstallations\boost\boost_1_66_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_66_0;$(IncludePath)</IncludePath>
+    <IncludePath>E:\CPPInstallations\boost\boost_1_66_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_66_0;$(IncludePath)</IncludePath>
+    <IncludePath>E:\CPPInstallations\boost\boost_1_66_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>E:\CPPInstallations\boost\boost_1_66_0</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -103,11 +104,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>E:\CPPInstallations\boost\boost_1_66_0</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -117,13 +119,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>E:\CPPInstallations\boost\boost_1_66_0</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,13 +138,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>E:\CPPInstallations\boost\boost_1_66_0</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,23 +157,24 @@
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="utils\ext_meth.h" />
-    <ClInclude Include="utils\ext_meth_generic.h" />
-    <ClInclude Include="utils\function_addons.h" />
-    <ClInclude Include="utils\hashing.h" />
-    <ClInclude Include="utils\iterator_addons.h" />
-    <ClInclude Include="utils\macros\ext_meth_singular.h" />
-    <ClInclude Include="utils\macros\flags.h" />
-    <ClInclude Include="utils\macros\macros.h" />
-    <ClInclude Include="utils\object.h" />
-    <ClInclude Include="utils\operation_exception.h" />
-    <ClInclude Include="utils\optional.h" />
-    <ClInclude Include="utils\property.h" />
-    <ClInclude Include="utils\ptrs.h" />
-    <ClInclude Include="utils\static_array.h" />
-    <ClInclude Include="utils\trie.h" />
-    <ClInclude Include="utils\type_at_index.h" />
-    <ClInclude Include="utils\utilities.h" />
+    <ClInclude Include="utils\ext_meth.hpp" />
+    <ClInclude Include="utils\ext_meth_generic.hpp" />
+    <ClInclude Include="utils\function_addons.hpp" />
+    <ClInclude Include="utils\hashing.hpp" />
+    <ClInclude Include="utils\iterator_addons.hpp" />
+    <ClInclude Include="utils\macros\ext_meth_singular.hpp" />
+    <ClInclude Include="utils\macros\flags.hpp" />
+    <ClInclude Include="utils\macros\macros.hpp" />
+    <ClInclude Include="utils\object.hpp" />
+    <ClInclude Include="utils\operation_exception.hpp" />
+    <ClInclude Include="utils\optional.hpp" />
+    <ClInclude Include="utils\property.hpp" />
+    <ClInclude Include="utils\ptrs.hpp" />
+    <ClInclude Include="utils\reflection.hpp" />
+    <ClInclude Include="utils\static_array.hpp" />
+    <ClInclude Include="utils\trie.hpp" />
+    <ClInclude Include="utils\type_at_index.hpp" />
+    <ClInclude Include="utils\utilities.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef __UTILITIES__GARBAGE_COLLECTION__POINTER_WRAPPERS__
 #define __UTILITIES__GARBAGE_COLLECTION__POINTER_WRAPPERS__
-#include "macros\flags.h"
+#include "macros\flags.hpp"
 #include <type_traits>
 #include <utility>
 namespace utils

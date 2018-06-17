@@ -20,7 +20,7 @@
 
 #define UTILS_FLAG(__name__)\
 	enum class __name__;\
-	using __##__name__##_underlying_type__ = typename underlying_type<__##__name__##_underlying_type__>::type;\
+	using __##__name__##_underlying_type__ = typename std::underlying_type<__##__name__##_underlying_type__>::type;\
 	 __UTILS__FLAG_FUNCS_CT__(__name__)\
 	enum class __name__
 
