@@ -137,10 +137,11 @@ namespace utils
 	public:
 		template<typename Iterator1 , typename Iterator2>
 		iterator_pair( Iterator1&& _begin_ , Iterator2&& _end_ ) :
-			_begin( _begin_ ) , _end( _end_ ) { }
+			_begin( std::forward<Iterator1>( _begin_ ) ) , 
+			_end( std::forward<Iterator2>( _end_ ) ) { }
 
-		iterator begin() const { return _begin; }
-		iterator end() const { return _end; }
+		iterator begin() { return _begin; }
+		iterator2 end() { return _end; }
 	private:
 		iterator _begin;
 		iterator2 _end;

@@ -11,21 +11,33 @@
 namespace utils
 {
 #pragma region type traits
+#pragma region Operators
 	template<typename T , typename... Ts>struct and_t :
 		std::bool_constant<T::value && and_t<Ts...>::value> { };
 	template<typename T , typename... Ts>struct or_t :
-		std::bool_constant<T::value || or_t<Ts...>::value> { };
+		std::bool_constant<T::value||or_t<Ts...>::value> { };
 	template<typename T , typename T2>struct and_t<T , T2> :
 		std::bool_constant<T::value && T2::value> { };
 	template<typename T , typename T2>struct or_t<T , T2> :
-		std::bool_constant<T::value || T2::value> { };
+		std::bool_constant<T::value||T2::value> { };
 	template<typename T>struct not_t :
 		std::bool_constant<!T::value> { };
+#pragma endregion
 
+#pragma region Modifiers
 	template<typename T> struct _rem_ref { using type = T; };
 	template<typename T> struct _rem_ref<T&> { using type = T; };
 	template<typename T> struct _rem_ref<T&&> { using type = T; };
-	template<typename T> using rem_ref = typename _rem_ref<T>::type;
+	template<typename T> using   rem_ref = typename _rem_ref<T>::type;
+	template<typename T> struct _rem_rval_ref { using type = T; };
+	template<typename T> struct _rem_rval_ref<T&&> { using type = T; };
+	template<typename T> using   rem_rval_ref = typename _rem_rval_ref<T>::type;
+	template<typename T> struct _rem_lval_ref { using type = T; };
+	template<typename T> struct _rem_lval_ref<T&> { using type = T; };
+	template<typename T> using   rem_lval_ref = typename _rem_lval_ref<T>::type;
+	template<typename T> struct _rem_ptr { using type = T; };
+	template<typename T> struct _rem_ptr<T*> { using type = T; };
+	template<typename T> using   rem_ptr = typename _rem_ptr<T>::type;
 
 	template<typename T> struct _rem_const { using type = T; };
 	template<typename T> struct _rem_const<const T> { using type = T; };
@@ -38,6 +50,7 @@ namespace utils
 	template<typename T> using rem_cv = rem_const<rem_volatile<T>>;
 	template<typename T> using rem_cvr = rem_ref<rem_cv<T>>;
 	template<typename T> using rem_cr = rem_ref<rem_const<T>>;
+#pragma endregion
 
 #pragma region disable_if and select_t
 	template<bool , typename = int>struct _disable_if { };
@@ -56,7 +69,7 @@ namespace utils
 	using val_to_t = std::bool_constant<value>;
 #pragma endregion
 
-
+#pragma region Checkers
 	template<typename T , typename T2>struct are_same :std::false_type { };
 	template<typename T>struct are_same<T , T> :std::true_type { };
 
@@ -67,6 +80,8 @@ namespace utils
 	template<typename T>struct is_ref :std::false_type { };
 	template<typename T>struct is_ref<T&> :std::true_type { };
 	template<typename T>struct is_ref<T&&> :std::true_type { };
+	template<typename T>struct is_ptr :std::false_type { };
+	template<typename T>struct is_ptr<T*> :std::true_type { };
 
 	template<typename T> struct is_const :std::false_type { };
 	template<typename T> struct is_const<const T> :std::true_type { };
@@ -126,9 +141,20 @@ namespace utils
 	using exists_or = detail::detector<Default , void , Op , Args...>;
 #endif // _HAS_CPP17
 
+#pragma endregion  
 #pragma endregion
 
-
+#pragma region Plippers
+	template<typename T>struct _flip_rval_ref { using type = rem_ref<T>&&; };
+	template<typename T>struct _flip_rval_ref<T&&> { using type = T; };
+	template<typename T>struct _flip_lval_ref { using type = rem_ref<T>&; };
+	template<typename T>struct _flip_lval_ref<T&> { using type = T; };
+	template<typename T>struct _flip_const { using type = const T; };
+	template<typename T>struct _flip_const<const T> { using type = T; };
+	template<typename T> using flip_rval_ref = typename _flip_rval_ref<T>::type;
+	template<typename T> using flip_lval_ref = typename _flip_lval_ref<T>::type;
+	template<typename T> using flip_const = typename _flip_const<T>::type;
+#pragma endregion
 #pragma endregion
 
 #pragma region using type-aliases
@@ -156,7 +182,7 @@ namespace utils
 	// Initializes the random number genreator with the current time as the seed.
 	static void rand_init()
 	{
-		if ( !is_rand_gen_initialized )
+		if(!is_rand_gen_initialized)
 		{
 			rand_gen =
 				std::mt19937_64(
@@ -176,7 +202,7 @@ namespace utils
 	inline llong rand_long( llong min , llong max )
 	{
 		rand_init();
-		return min + static_cast<utils::llong>( rand_gen() % ( max - min + 1 ) );
+		return min+static_cast<utils::llong>( rand_gen()%( max-min+1 ) );
 	}
 
 	// Returns a random integer number between min [inclusive] and max [exclusive]
@@ -199,7 +225,7 @@ namespace utils
 	{
 		auto sz = ds.size();
 		using std::swap;
-		for ( auto i = typename Ds::size_type(); i < sz - 1; i++ )
+		for(auto i = typename Ds::size_type(); i<sz-1; i++)
 			swap( ds[ rand_int( i , sz ) ] , ds[ i ] );
 	}
 
@@ -207,7 +233,7 @@ namespace utils
 	void shuffle_collection( T( &a )[ N ] )
 	{
 		using std::swap;
-		for ( size_t i = 0; i < N - 1; i++ )
+		for(size_t i = 0; i<N-1; i++)
 			swap( ds[ rand_int( i , N ) ] , ds[ i ] );
 	}
 #pragma endregion
@@ -215,24 +241,24 @@ namespace utils
 #pragma region Math Functions
 #pragma region abs
 	// Returns the AbsoluteValue of the value you passed in.
-	constexpr inline ullong abs( llong value ) noexcept { return ullong( value < 0 ? -value : value ); }
-	constexpr inline ulong abs( long value ) noexcept { return ulong( value < 0 ? -value : value ); }
-	constexpr inline uint abs( int value ) noexcept { return uint( value < 0 ? -value : value ); }
+	constexpr inline ullong abs( llong value ) noexcept { return ullong( value<0 ? -value : value ); }
+	constexpr inline ulong abs( long value ) noexcept { return ulong( value<0 ? -value : value ); }
+	constexpr inline uint abs( int value ) noexcept { return uint( value<0 ? -value : value ); }
 	// Returns the AbsoluteValue of the value you passed in.
-	constexpr inline float abs( float value ) noexcept { return ( value < 0 ? -value : value ); }
+	constexpr inline float abs( float value ) noexcept { return ( value<0 ? -value : value ); }
 	// Returns the AbsoluteValue of the value you passed in.
-	constexpr inline double abs( double value ) noexcept { return ( value < 0 ? -value : value ); }
+	constexpr inline double abs( double value ) noexcept { return ( value<0 ? -value : value ); }
 	// Returns the AbsoluteValue of the value you passed in.
-	constexpr inline real abs( real value ) noexcept { return ( value < 0 ? -value : value ); }
+	constexpr inline real abs( real value ) noexcept { return ( value<0 ? -value : value ); }
 #pragma endregion
 
 #pragma region sign
-	constexpr inline llong sign( llong value ) noexcept { return ( value < 0 ? -1 : 1 ); }
-	constexpr inline long sign( long value ) noexcept { return ( value < 0 ? -1 : 1 ); }
-	constexpr inline int sign( int value ) noexcept { return ( value < 0 ? -1 : 1 ); }
-	constexpr inline float sign( float value ) noexcept { return ( value < 0 ? -1.f : 1.f ); }
-	constexpr inline double sign( double value ) noexcept { return ( value < 0 ? -1. : 1. ); }
-	constexpr inline real sign( real value ) noexcept { return ( value < 0 ? -1. : 1. ); }
+	constexpr inline llong sign( llong value ) noexcept { return ( value<0 ? -1 : 1 ); }
+	constexpr inline long sign( long value ) noexcept { return ( value<0 ? -1 : 1 ); }
+	constexpr inline int sign( int value ) noexcept { return ( value<0 ? -1 : 1 ); }
+	constexpr inline float sign( float value ) noexcept { return ( value<0 ? -1.f : 1.f ); }
+	constexpr inline double sign( double value ) noexcept { return ( value<0 ? -1. : 1. ); }
+	constexpr inline real sign( real value ) noexcept { return ( value<0 ? -1. : 1. ); }
 #pragma endregion
 
 #pragma region repeat
@@ -240,44 +266,44 @@ namespace utils
 	constexpr inline llong repeat(
 		llong value , ullong min , ullong max ) noexcept
 	{
-		return ( ( ( value + ( value < 0 ? -1 : 0 ) ) % ( max - min + 1 ) ) + min );
+		return ( ( ( value+( value<0 ? -1 : 0 ) )%( max-min+1 ) )+min );
 	}
 
 	constexpr inline llong repeat( llong value , ullong max ) noexcept
-	{ return ( ( value + ( value < 0 ? -1 : 0 ) ) % ( max + 1 ) ); }
+	{ return ( ( value+( value<0 ? -1 : 0 ) )%( max+1 ) ); }
 
 	constexpr inline long repeat(
 		long value , ulong min , ulong max ) noexcept
 	{
-		return ( ( ( value + ( value < 0 ? -1 : 0 ) ) % ( max - min + 1 ) ) + min );
+		return ( ( ( value+( value<0 ? -1 : 0 ) )%( max-min+1 ) )+min );
 	}
 
 	constexpr inline long repeat( long value , ulong max ) noexcept
-	{ return( ( value + ( value < 0 ? -1 : 0 ) ) % ( max + 1 ) ); }
+	{ return( ( value+( value<0 ? -1 : 0 ) )%( max+1 ) ); }
 
 	constexpr inline int repeat(
 		int value , uint min , uint max ) noexcept
 	{
-		return ( ( ( value + ( value < 0 ? -1 : 0 ) ) % ( max - min + 1 ) ) + min );
+		return ( ( ( value+( value<0 ? -1 : 0 ) )%( max-min+1 ) )+min );
 	}
 
 	constexpr inline int repeat( int value , uint max ) noexcept
-	{ return ( ( value + ( value < 0 ? -1 : 0 ) ) % ( max + 1 ) ); }
+	{ return ( ( value+( value<0 ? -1 : 0 ) )%( max+1 ) ); }
 #pragma endregion
 
 #pragma region floor and ceil
 	CPP_14_RELAXED_CONSTEXPR inline llong floor( real valueToFloor ) noexcept
-	{ llong xi = llong( valueToFloor ); return valueToFloor < xi ? xi - 1 : xi; }
+	{ llong xi = llong( valueToFloor ); return valueToFloor<xi ? xi-1 : xi; }
 	CPP_14_RELAXED_CONSTEXPR inline long floor( double valueToFloor ) noexcept
-	{ int xi = long( valueToFloor ); return valueToFloor < xi ? xi - 1 : xi; }
+	{ int xi = long( valueToFloor ); return valueToFloor<xi ? xi-1 : xi; }
 	CPP_14_RELAXED_CONSTEXPR inline int floor( float valueToFloor ) noexcept
-	{ int xi = int( valueToFloor ); return valueToFloor < xi ? xi - 1 : xi; }
+	{ int xi = int( valueToFloor ); return valueToFloor<xi ? xi-1 : xi; }
 	CPP_14_RELAXED_CONSTEXPR inline llong ceil( real valueToCeil ) noexcept
-	{ llong xi = llong( valueToCeil ); return valueToCeil < xi ? xi : xi + 1; }
+	{ llong xi = llong( valueToCeil ); return valueToCeil<xi ? xi : xi+1; }
 	CPP_14_RELAXED_CONSTEXPR inline long ceil( double valueToCeil ) noexcept
-	{ int xi = long( valueToCeil ); return valueToCeil < xi ? xi : xi + 1; }
+	{ int xi = long( valueToCeil ); return valueToCeil<xi ? xi : xi+1; }
 	CPP_14_RELAXED_CONSTEXPR inline int ceil( float valueToCeil ) noexcept
-	{ int xi = int( valueToCeil ); return valueToCeil < xi ? xi : xi + 1; }
+	{ int xi = int( valueToCeil ); return valueToCeil<xi ? xi : xi+1; }
 #pragma endregion
 #pragma endregion
 
@@ -289,9 +315,9 @@ namespace utils
 			constexpr inline less_than()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) < std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )<std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) < std::forward<T2>( v2 );
+				return std::forward<T>( v1 )<std::forward<T2>( v2 );
 			}
 		};
 		struct less_than_or_eq
@@ -299,9 +325,9 @@ namespace utils
 			constexpr inline less_than_or_eq()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) <= std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )<=std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) <= std::forward<T2>( v2 );
+				return std::forward<T>( v1 )<=std::forward<T2>( v2 );
 			}
 		};
 		struct greater_than
@@ -309,9 +335,9 @@ namespace utils
 			constexpr inline greater_than()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) > std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )>std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) > std::forward<T2>( v2 );
+				return std::forward<T>( v1 )>std::forward<T2>( v2 );
 			}
 		};
 		struct greater_than_or_eq
@@ -319,9 +345,9 @@ namespace utils
 			constexpr inline greater_than_or_eq()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) >= std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )>=std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) >= std::forward<T2>( v2 );
+				return std::forward<T>( v1 )>=std::forward<T2>( v2 );
 			}
 		};
 		struct equal
@@ -329,9 +355,9 @@ namespace utils
 			constexpr inline equal()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) == std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )==std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) == std::forward<T2>( v2 );
+				return std::forward<T>( v1 )==std::forward<T2>( v2 );
 			}
 		};
 		struct not_equal
@@ -339,9 +365,9 @@ namespace utils
 			constexpr inline not_equal()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) != std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )!=std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) != std::forward<T2>( v2 );
+				return std::forward<T>( v1 )!=std::forward<T2>( v2 );
 			}
 		};
 	#pragma endregion
@@ -352,9 +378,9 @@ namespace utils
 			constexpr inline left_shift()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) << std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )<<std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) << std::forward<T2>( v2 );
+				return std::forward<T>( v1 )<<std::forward<T2>( v2 );
 			}
 		};
 		struct right_shift
@@ -362,9 +388,9 @@ namespace utils
 			constexpr inline right_shift()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) >> std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )>>std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) >> std::forward<T2>( v2 );
+				return std::forward<T>( v1 )>>std::forward<T2>( v2 );
 			}
 		};
 		struct bitwise_and
@@ -382,9 +408,9 @@ namespace utils
 			constexpr inline bitwise_xor()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) ^ std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )^std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) ^ std::forward<T2>( v2 );
+				return std::forward<T>( v1 )^std::forward<T2>( v2 );
 			}
 		};
 		struct bitwise_or
@@ -392,9 +418,9 @@ namespace utils
 			constexpr inline bitwise_or()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) | std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )|std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) | std::forward<T2>( v2 );
+				return std::forward<T>( v1 )|std::forward<T2>( v2 );
 			}
 		};
 	#pragma endregion
@@ -405,9 +431,9 @@ namespace utils
 			constexpr inline logical_and()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) && std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )&&std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) && std::forward<T2>( v2 );
+				return std::forward<T>( v1 )&&std::forward<T2>( v2 );
 			}
 		};
 		struct logical_or
@@ -415,9 +441,9 @@ namespace utils
 			constexpr inline logical_or()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) || std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )||std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) || std::forward<T2>( v2 );
+				return std::forward<T>( v1 )||std::forward<T2>( v2 );
 			}
 		};
 	#pragma endregion
@@ -497,9 +523,9 @@ namespace utils
 			constexpr inline division()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) / std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )/std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) / std::forward<T2>( v2 );
+				return std::forward<T>( v1 )/std::forward<T2>( v2 );
 			}
 		};
 		struct remainder
@@ -507,9 +533,9 @@ namespace utils
 			constexpr inline remainder()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) % std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )%std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) % std::forward<T2>( v2 );
+				return std::forward<T>( v1 )%std::forward<T2>( v2 );
 			}
 		};
 		struct addition
@@ -517,9 +543,9 @@ namespace utils
 			constexpr inline addition()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) + std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )+std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) + std::forward<T2>( v2 );
+				return std::forward<T>( v1 )+std::forward<T2>( v2 );
 			}
 		};
 		struct subtraction
@@ -527,9 +553,9 @@ namespace utils
 			constexpr inline subtraction()noexcept { }
 			template<typename T , typename T2>
 			inline auto operator()( T&& v1 , T2&& v2 ) const ->
-				decltype( std::forward<T>( v1 ) - std::forward<T2>( v2 ) )
+				decltype( std::forward<T>( v1 )-std::forward<T2>( v2 ) )
 			{
-				return std::forward<T>( v1 ) - std::forward<T2>( v2 );
+				return std::forward<T>( v1 )-std::forward<T2>( v2 );
 			}
 		};
 		struct array_subscript
@@ -599,8 +625,8 @@ namespace utils
 		using std::find_if_not;
 
 		return std::basic_string<Char>(
-			find_if_not( s , s + len , isspace ) ,
-			find_if_not( std::reverse_iterator<decltype( s )>( s ) , std::reverse_iterator<decltype( s )>( s + len ) , isspace ).base()
+			find_if_not( s , s+len , isspace ) ,
+			find_if_not( std::reverse_iterator<decltype( s )>( s ) , std::reverse_iterator<decltype( s )>( s+len ) , isspace ).base()
 			);
 	}
 
@@ -615,10 +641,10 @@ namespace utils
 	template<typename T>
 	inline std::string type_id()
 	{
-		static size_t null_template_len = strlen( typeid( null_template<> ).name() ) - 1;
+		static size_t null_template_len = strlen( typeid( null_template<> ).name() )-1;
 
 		std::string str = typeid( null_template<T> ).name();
-		return str.substr( null_template_len , str.length()- null_template_len  - 1 );
+		return str.substr( null_template_len , str.length()-null_template_len-1 );
 	}
 }
 #endif // !__UTILITIES__UTILITIES__

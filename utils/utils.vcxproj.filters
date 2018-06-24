@@ -81,6 +81,9 @@
     <ClInclude Include="utils\macros\macros.hpp">
       <Filter>Header Files\utils\macros</Filter>
     </ClInclude>
+    <ClInclude Include="utils\coro.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
